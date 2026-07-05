@@ -39,7 +39,7 @@
   "devDependencies": {
     "@swc/core": "^1.15.43",
     "@types/node": "^22.0.0",
-    "@velajs/vela": "link:../vela",
+    "@velajs/vela": "^1.15.0",
     "typescript": "^6.0.3",
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.1.9"
