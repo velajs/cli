@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "CLI for Vela apps — seeding and project tasks (Node-side; not bundled into the edge Worker)",
   "type": "module",
+  "packageManager": "pnpm@10.20.0",
   "bin": {
     "vela": "./dist/index.js"
   },
