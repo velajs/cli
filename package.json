@@ -54,5 +54,9 @@
     "edge",
     "cloudflare-workers"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/velajs/cli.git"
+  }
 }
