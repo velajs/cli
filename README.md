@@ -19,8 +19,29 @@ pnpm add -D @velajs/cli
 | `vela module graph` | Module graph: imports tree with `global`/`lazy` flags and provider counts (`--json` for the raw graph). |
 | `vela entrypoint list` | Declared entrypoint kinds (websocket, queue, cron, …) and their entries — lazy modules stay unmaterialized. |
 | `vela openapi dump` | Emit the OpenAPI document (needs `rootModule` in the config; `--out`, `--title`, `--api-version`, `--global-prefix`). |
+| `vela mcp serve` | Run a Model Context Protocol stdio server exposing the introspection above as read-only tools (`route_list`, `module_graph`, `entrypoint_list`, `openapi_dump`, `token_describe`) plus a `vela://openapi` resource — for AI agents. |
 
-All introspection commands take `--config <path>` and `--json`.
+All introspection commands take `--config <path>`; the four listing/dump commands also take `--json`.
+
+### MCP server
+
+`vela mcp serve` builds the app from `vela.config` and speaks the [Model Context
+Protocol](https://modelcontextprotocol.io) over stdio, so an AI agent can query
+the app's shape. It exposes read-only tools — `route_list`, `module_graph`
+(`{ tree? }`), `entrypoint_list`, `openapi_dump` (`{ globalPrefix?, title?,
+apiVersion? }`, needs `rootModule`), `token_describe` (`{ token }`) — and, when
+`rootModule` is set, a `vela://openapi` resource. Tool results are JSON text.
+stdout carries only JSON-RPC; all logging goes to stderr. The server runs until
+the client disconnects, then disposes the app.
+
+```jsonc
+// e.g. in an MCP client config
+{
+  "mcpServers": {
+    "vela": { "command": "vela", "args": ["mcp", "serve"] }
+  }
+}
+```
 
 ## Configure
 

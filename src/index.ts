@@ -6,6 +6,7 @@ import {
   OpenApiDumpCommand,
   RouteListCommand,
 } from './commands/introspect.commands.js';
+import { McpServeCommand } from './commands/mcp.command.js';
 import { SeedCommand } from './commands/seed.command.js';
 
 const cli = new Cli({
@@ -21,6 +22,7 @@ cli.register(RouteListCommand);
 cli.register(ModuleGraphCommand);
 cli.register(EntrypointListCommand);
 cli.register(OpenApiDumpCommand);
+cli.register(McpServeCommand);
 
 void cli.runExit(process.argv.slice(2));
 
@@ -31,6 +33,7 @@ export {
   OpenApiDumpCommand,
   RouteListCommand,
 } from './commands/introspect.commands.js';
+export { McpServeCommand } from './commands/mcp.command.js';
 export { collectRoutes, collectModules, collectEntrypoints, renderModuleTree } from './introspect.js';
 export type { RouteRow, EntrypointRow } from './introspect.js';
 export { renderTable } from './format.js';
