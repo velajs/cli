@@ -1,6 +1,5 @@
 # @velajs/cli introspection — design (vela roadmap phase 3, final item)
 
-Claim marker: `vela/docs/superpowers/specs/CLAIMED-cli-introspection.md`.
 CLI repo: freshly `git init`-ed, baseline b44decf, branch `feat/introspection`.
 
 ## Commands (clipanion, existing loadConfig/createApp convention)
