@@ -9,7 +9,8 @@ export class SeedCommand extends Command {
   static override usage = Command.Usage({
     category: 'Database',
     description: 'Run database seeders for the Vela app.',
-    details: 'Loads vela.config.{js,mjs,ts}, builds the app, and runs all @Seeder() classes in order.',
+    details:
+      'Loads vela.config.{js,mjs,ts}, builds the app, and runs all @Seeder() classes in order.',
     examples: [
       ['Run all seeders', 'vela db seed'],
       ['Use a specific config', 'vela db seed --config ./config/vela.config.js'],

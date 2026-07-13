@@ -67,7 +67,8 @@ function newestSourceMtime(dir: string): number {
 
 /** Build the CLI to `dist/` when it is missing or stale relative to source. */
 function ensureBuilt(): void {
-  const stale = !existsSync(cliEntry) || statSync(cliEntry).mtimeMs < newestSourceMtime(join(rootDir, 'src'));
+  const stale =
+    !existsSync(cliEntry) || statSync(cliEntry).mtimeMs < newestSourceMtime(join(rootDir, 'src'));
   if (stale) {
     execFileSync('pnpm', ['build'], { cwd: rootDir, stdio: 'inherit' });
   }
@@ -128,7 +129,10 @@ class StdioRpc {
     const id = this.nextId++;
     const frame = { jsonrpc: '2.0', id, method, params };
     return new Promise((resolvePromise, rejectPromise) => {
-      const timer = setTimeout(() => rejectPromise(new Error(`Timed out waiting for ${method}`)), 15_000);
+      const timer = setTimeout(
+        () => rejectPromise(new Error(`Timed out waiting for ${method}`)),
+        15_000,
+      );
       this.pending.set(id, (msg) => {
         clearTimeout(timer);
         this.pending.delete(id);
@@ -185,13 +189,16 @@ describe('vela mcp serve', () => {
 
     // 3) tools/call route_list
     const call = await rpc.request('tools/call', { name: 'route_list', arguments: {} });
-    const callResult = call.result as { content: { type: string; text: string }[]; isError?: boolean };
+    const callResult = call.result as {
+      content: { type: string; text: string }[];
+      isError?: boolean;
+    };
     expect(callResult.isError).toBeFalsy();
     expect(callResult.content[0].type).toBe('text');
     const routes = JSON.parse(callResult.content[0].text) as { path: string; handler: string }[];
-    expect(routes.some((r) => r.path === '/api/v1/users/:id' && r.handler === 'UsersController#getOne')).toBe(
-      true,
-    );
+    expect(
+      routes.some((r) => r.path === '/api/v1/users/:id' && r.handler === 'UsersController#getOne'),
+    ).toBe(true);
 
     // Close the transport → server disconnects → process exits cleanly.
     child.stdin.end();
