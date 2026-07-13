@@ -40,7 +40,10 @@ const CANDIDATES = ['vela.config.js', 'vela.config.mjs', 'vela.config.ts'];
  * (Node 22+ `--experimental-strip-types`, or tsx/ts-node); `.js`/`.mjs` load
  * directly.
  */
-export async function loadConfig(cwd: string = process.cwd(), explicitPath?: string): Promise<VelaConfig> {
+export async function loadConfig(
+  cwd: string = process.cwd(),
+  explicitPath?: string,
+): Promise<VelaConfig> {
   const path = explicitPath
     ? isAbsolute(explicitPath)
       ? explicitPath
@@ -48,10 +51,15 @@ export async function loadConfig(cwd: string = process.cwd(), explicitPath?: str
     : await findConfig(cwd);
 
   if (!path) {
-    throw new Error(`No vela config found. Create one of: ${CANDIDATES.join(', ')} (or pass --config <path>).`);
+    throw new Error(
+      `No vela config found. Create one of: ${CANDIDATES.join(', ')} (or pass --config <path>).`,
+    );
   }
 
-  const mod = (await import(pathToFileURL(path).href)) as { default?: VelaConfig; config?: VelaConfig };
+  const mod = (await import(pathToFileURL(path).href)) as {
+    default?: VelaConfig;
+    config?: VelaConfig;
+  };
   const config = mod.default ?? mod.config;
   if (!config || typeof config.createApp !== 'function') {
     throw new Error(

@@ -6,7 +6,12 @@ import type { Type, VelaApplication } from '@velajs/vela';
 import { Command, Option } from 'clipanion';
 import { z } from 'zod';
 import { loadConfig } from '../config.js';
-import { collectEntrypoints, collectModules, collectRoutes, renderModuleTree } from '../introspect.js';
+import {
+  collectEntrypoints,
+  collectModules,
+  collectRoutes,
+  renderModuleTree,
+} from '../introspect.js';
 
 const OPENAPI_URI = 'vela://openapi';
 
@@ -23,9 +28,24 @@ function toolError(message: string): { isError: true; content: { type: 'text'; t
 /** Name + version for the MCP server handshake, read from the CLI's own package.json. */
 async function readCliIdentity(): Promise<{ name: string; version: string }> {
   const here = dirname(fileURLToPath(import.meta.url));
-  const pkgPath = join(here, '..', '..', 'package.json');
-  const pkg = JSON.parse(await readFile(pkgPath, 'utf8')) as { name?: string; version?: string };
-  return { name: pkg.name ?? '@velajs/cli', version: pkg.version ?? '0.0.0' };
+  // tsdown bundles this module into dist/index.js; source-mode tests load it
+  // from src/commands/mcp.command.ts. Support both locations without relying
+  // on a fixed output depth.
+  for (const pkgPath of [
+    join(here, '..', 'package.json'),
+    join(here, '..', '..', 'package.json'),
+  ]) {
+    try {
+      const pkg = JSON.parse(await readFile(pkgPath, 'utf8')) as {
+        name?: string;
+        version?: string;
+      };
+      return { name: pkg.name ?? '@velajs/cli', version: pkg.version ?? '0.0.0' };
+    } catch (error) {
+      if ((error as { code?: string }).code !== 'ENOENT') throw error;
+    }
+  }
+  return { name: '@velajs/cli', version: '0.0.0' };
 }
 
 /**
@@ -38,14 +58,23 @@ function describeToken(app: VelaApplication, token: string): unknown {
   const modules = collectModules(app);
   const providedBy = modules
     .filter((m) => m.providers.includes(token))
-    .map((m) => ({ moduleId: m.moduleId, isGlobal: m.isGlobal, lazy: m.lazy, exported: m.exports.includes(token) }));
+    .map((m) => ({
+      moduleId: m.moduleId,
+      isGlobal: m.isGlobal,
+      lazy: m.lazy,
+      exported: m.exports.includes(token),
+    }));
   const matchesModule = modules.find((m) => m.moduleId === token);
   return {
     token,
     found: providedBy.length > 0 || matchesModule !== undefined,
     providedBy,
     module: matchesModule
-      ? { moduleId: matchesModule.moduleId, isGlobal: matchesModule.isGlobal, lazy: matchesModule.lazy }
+      ? {
+          moduleId: matchesModule.moduleId,
+          isGlobal: matchesModule.isGlobal,
+          lazy: matchesModule.lazy,
+        }
       : null,
   };
 }
@@ -98,7 +127,7 @@ export class McpServeCommand extends Command {
         'route_list',
         {
           description:
-            'The app\'s HTTP route table: framework-composed controller routes (method, full ' +
+            "The app's HTTP route table: framework-composed controller routes (method, full " +
             'path, Controller#handler) plus everything else mounted on the router, labeled ' +
             '(mounted). Empty when the app builds no HTTP routes.',
           inputSchema: {},

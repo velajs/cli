@@ -36,6 +36,9 @@ function errorMessage(error: unknown): string {
 export function renderTable(headers: string[], rows: string[][]): string[] {
   const widths = headers.map((h, i) => Math.max(h.length, ...rows.map((r) => (r[i] ?? '').length)));
   const line = (cells: string[]): string =>
-    cells.map((c, i) => (c ?? '').padEnd(widths[i])).join('  ').trimEnd();
+    cells
+      .map((c, i) => (c ?? '').padEnd(widths[i]!))
+      .join('  ')
+      .trimEnd();
   return [line(headers), line(widths.map((w) => '-'.repeat(w))), ...rows.map(line)];
 }

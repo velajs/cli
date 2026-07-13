@@ -47,7 +47,12 @@ export function collectRoutes(app: VelaApplication): RouteRow[] | null {
     const key = `${honoRoute.method} ${honoRoute.path}`;
     if (covered.has(key) || seenMounted.has(key)) continue;
     seenMounted.add(key);
-    rows.push({ method: honoRoute.method, path: honoRoute.path, handler: '(mounted)', source: 'mounted' });
+    rows.push({
+      method: honoRoute.method,
+      path: honoRoute.path,
+      handler: '(mounted)',
+      source: 'mounted',
+    });
   }
 
   return rows.sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method));
@@ -70,7 +75,9 @@ export function renderModuleTree(modules: ModuleDescription[]): string[] {
       ? [mod.isGlobal ? 'global' : null, mod.lazy ? 'lazy' : null].filter(Boolean)
       : [];
     const suffix = flags.length > 0 ? ` (${flags.join(', ')})` : '';
-    const providers = mod ? ` — ${mod.providers.length} provider${mod.providers.length === 1 ? '' : 's'}` : '';
+    const providers = mod
+      ? ` — ${mod.providers.length} provider${mod.providers.length === 1 ? '' : 's'}`
+      : '';
     lines.push(`${'  '.repeat(depth)}${id}${suffix}${providers}`);
     if (!mod || trail.has(id)) return;
     const nextTrail = new Set(trail).add(id);
@@ -90,13 +97,18 @@ export interface EntrypointRow {
 
 function safeMeta(meta: unknown): string {
   try {
-    return JSON.stringify(meta, (_key, value: unknown) =>
-      typeof value === 'function'
-        ? '[function]'
-        : typeof value === 'object' && value !== null && value.constructor !== Object && !Array.isArray(value)
-          ? `[${(value as object).constructor.name}]`
-          : value,
-    ) ?? 'undefined';
+    return (
+      JSON.stringify(meta, (_key, value: unknown) =>
+        typeof value === 'function'
+          ? '[function]'
+          : typeof value === 'object' &&
+              value !== null &&
+              value.constructor !== Object &&
+              !Array.isArray(value)
+            ? `[${(value as object).constructor.name}]`
+            : value,
+      ) ?? 'undefined'
+    );
   } catch {
     return '[unserializable]';
   }
@@ -109,7 +121,7 @@ function safeMeta(meta: unknown): string {
  */
 export function collectEntrypoints(app: VelaApplication): EntrypointRow[] {
   const rows: EntrypointRow[] = [];
-  const declared = getEntrypointKinds().map((k) => k.kind);
+  const declared = getEntrypointKinds().map((k: { kind: string }) => k.kind);
   const populated = app.entrypoints.kinds();
   const kinds = [...new Set([...declared, ...populated])];
 

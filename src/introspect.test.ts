@@ -10,7 +10,12 @@ import {
 } from '@velajs/vela';
 import type { VelaApplication } from '@velajs/vela';
 import { Process, Processor, QueueModule } from '@velajs/vela/queue';
-import { collectEntrypoints, collectModules, collectRoutes, renderModuleTree } from './introspect.js';
+import {
+  collectEntrypoints,
+  collectModules,
+  collectRoutes,
+  renderModuleTree,
+} from './introspect.js';
 import { renderTable } from './format.js';
 
 const SHARED = new InjectionToken<string>('cli-test:shared');
@@ -110,7 +115,13 @@ describe('collectEntrypoints', () => {
 
 describe('renderTable', () => {
   it('aligns columns', () => {
-    const lines = renderTable(['A', 'LONG'], [['x', 'y'], ['xxx', 'yy']]);
+    const lines = renderTable(
+      ['A', 'LONG'],
+      [
+        ['x', 'y'],
+        ['xxx', 'yy'],
+      ],
+    );
     expect(lines[0]).toBe('A    LONG');
     expect(lines[2]).toBe('x    y');
     expect(lines[3]).toBe('xxx  yy');

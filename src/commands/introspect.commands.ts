@@ -4,7 +4,12 @@ import type { VelaApplication } from '@velajs/vela';
 import { Command, Option } from 'clipanion';
 import { loadConfig } from '../config.js';
 import { renderTable } from '../format.js';
-import { collectEntrypoints, collectModules, collectRoutes, renderModuleTree } from '../introspect.js';
+import {
+  collectEntrypoints,
+  collectModules,
+  collectRoutes,
+  renderModuleTree,
+} from '../introspect.js';
 
 /** Shared shell: load config → createApp → run → best-effort dispose. */
 abstract class AppCommand extends Command {
@@ -44,7 +49,10 @@ export class RouteListCommand extends AppCommand {
     details:
       'Framework-composed controller routes (method, full path, controller#handler) plus ' +
       'everything else mounted on the router (CRUD/contributed routes, doc UIs) labeled (mounted).',
-    examples: [['List routes', 'vela route list'], ['As JSON', 'vela route list --json']],
+    examples: [
+      ['List routes', 'vela route list'],
+      ['As JSON', 'vela route list --json'],
+    ],
   });
 
   protected async run(app: VelaApplication): Promise<number> {
@@ -76,7 +84,10 @@ export class ModuleGraphCommand extends AppCommand {
     details:
       'Module instances with their imports (indented tree), global/lazy flags, and provider ' +
       'counts. --json emits the raw descriptions (providers, exports, imports per module).',
-    examples: [['Print the graph', 'vela module graph'], ['As JSON', 'vela module graph --json']],
+    examples: [
+      ['Print the graph', 'vela module graph'],
+      ['As JSON', 'vela module graph --json'],
+    ],
   });
 
   protected async run(app: VelaApplication): Promise<number> {
@@ -125,7 +136,7 @@ export class OpenApiDumpCommand extends Command {
     category: 'Introspection',
     description: 'Emit the OpenAPI document for the Vela app.',
     details:
-      "Requires `rootModule` in vela.config (createOpenApiDocument works from the module " +
+      'Requires `rootModule` in vela.config (createOpenApiDocument works from the module ' +
       "class). The app's global prefix is applied automatically; --global-prefix overrides.",
     examples: [
       ['Print to stdout', 'vela openapi dump'],
@@ -134,7 +145,9 @@ export class OpenApiDumpCommand extends Command {
   });
 
   config = Option.String('--config', { description: 'Path to the vela config file.' });
-  out = Option.String('--out', { description: 'Write the document to this file instead of stdout.' });
+  out = Option.String('--out', {
+    description: 'Write the document to this file instead of stdout.',
+  });
   title = Option.String('--title', { description: 'info.title override.' });
   apiVersion = Option.String('--api-version', { description: 'info.version override.' });
   globalPrefix = Option.String('--global-prefix', {
@@ -145,7 +158,7 @@ export class OpenApiDumpCommand extends Command {
     const velaConfig = await loadConfig(process.cwd(), this.config);
     if (!velaConfig.rootModule) {
       this.context.stderr.write(
-        "openapi dump needs the root module. Add it to your vela.config:\n\n" +
+        'openapi dump needs the root module. Add it to your vela.config:\n\n' +
           '  export default defineVelaConfig({\n' +
           '    rootModule: AppModule,\n' +
           '    async createApp() { ... },\n' +

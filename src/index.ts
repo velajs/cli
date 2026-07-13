@@ -34,7 +34,12 @@ export {
   RouteListCommand,
 } from './commands/introspect.commands.js';
 export { McpServeCommand } from './commands/mcp.command.js';
-export { collectRoutes, collectModules, collectEntrypoints, renderModuleTree } from './introspect.js';
+export {
+  collectRoutes,
+  collectModules,
+  collectEntrypoints,
+  renderModuleTree,
+} from './introspect.js';
 export type { RouteRow, EntrypointRow } from './introspect.js';
 export { renderTable } from './format.js';
 export { loadConfig, defineVelaConfig } from './config.js';
