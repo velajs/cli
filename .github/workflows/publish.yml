@@ -29,15 +29,17 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: pnpm
 
-      - run: pnpm install
+      - run: npm install -g npm@12.0.0
 
-      - run: pnpm run typecheck
+      - name: Validate release lock integrity
+        run: node scripts/check-release-lock.mjs
 
-      - run: pnpm run build
+      - run: pnpm install --frozen-lockfile
 
-      - run: pnpm test
+      - run: pnpm release:preflight
+
+      - run: pnpm release:check
 
       - run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
